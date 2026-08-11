@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan — Eye-AI Smart Screening of Ocular Diseases</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0ea5e9;
+  --blue2: #38bdf8;
+  --blue3: #0284c7;
+  --purple: #8b5cf6;
+  --green: #10b981;
+  --red: #ef4444;
+  --dark: #020817;
+  --dark2: #0a1628;
+  --dark3: #0f2040;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(14,165,233,0.15);
+  --text: #f1f5f9;
+  --muted: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--dark);
+  color:var(--text);
+  min-height:100vh;
+}
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--dark); }
+::-webkit-scrollbar-thumb { background:var(--dark3); border-radius:3px; }
+
+nav {
+  height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 40px;
+  background:rgba(2,8,23,0.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(24px);
+  position:sticky;
+  top:0; z-index:100;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  text-decoration:none; color:var(--text);
+}
+.logo-box {
+  width:34px; height:34px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px;
+}
+.logo-name { font-size:17px; font-weight:700; }
+.logo-name span { color:var(--blue); }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.btn-back {
+  padding:8px 18px; border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent; color:var(--text);
+  font-size:13px; font-weight:600;
+  text-decoration:none; transition:all 0.2s;
+}
+.btn-back:hover { background:var(--card); }
+.btn-logout {
+  padding:8px 18px; border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent; color:var(--muted);
+  font-size:13px; font-weight:600;
+  text-decoration:none; transition:all 0.2s;
+}
+.btn-logout:hover { color:var(--red); border-color:var(--red); }
+
+.main { padding:32px 40px; max-width:1200px; margin:0 auto; }
+.page-title { font-size:24px; font-weight:800; margin-bottom:4px; }
+.page-desc { color:var(--muted); font-size:14px; margin-bottom:28px; }
+
+.scan-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  margin-bottom:24px;
+}
+
+.upload-card {
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+}
+.card-title {
+  font-size:15px; font-weight:700;
+  margin-bottom:20px; color:var(--text);
+}
+.upload-zone {
+  border:2px dashed var(--border);
+  border-radius:12px;
+  padding:40px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.25s;
+  margin-bottom:16px;
+  position:relative;
+}
+.upload-zone:hover {
+  border-color:var(--blue);
+  background:rgba(14,165,233,0.03);
+}
+.upload-zone input {
+  position:absolute; inset:0;
+  opacity:0; cursor:pointer;
+  width:100%; height:100%;
+}
+.upload-icon { font-size:40px; margin-bottom:12px; }
+.upload-zone h4 { font-size:14px; font-weight:600; margin-bottom:4px; }
+.upload-zone p { font-size:12px; color:var(--muted); }
+
+#preview-img {
+  width:100%; border-radius:10px;
+  display:none; margin-bottom:16px;
+  border:1px solid var(--border);
+}
+
+.btn-analyze {
+  width:100%;
+  background:var(--blue);
+  color:white;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  font-size:15px;
+  font-weight:700;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  transition:all 0.25s;
+}
+.btn-analyze:hover {
+  background:var(--blue3);
+  transform:translateY(-1px);
+  box-shadow:0 8px 25px rgba(14,165,233,0.35);
+}
+.btn-analyze:disabled {
+  background:var(--dark3);
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+.pipeline {
+  background:rgba(14,165,233,0.04);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-top:16px;
+}
+.pipeline-title {
+  font-size:11px; font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  margin-bottom:12px;
+}
+.pipeline-steps { display:flex; flex-direction:column; gap:8px; }
+.pipeline-step {
+  display:flex; align-items:center; gap:10px;
+  font-size:12px; color:var(--muted);
+}
+.p-num {
+  width:20px; height:20px;
+  border-radius:50%;
+  background:rgba(14,165,233,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:var(--blue);
+  flex-shrink:0;
+}
+
+.results-card {
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+}
+
+.loading {
+  display:none;
+  text-align:center;
+  padding:60px 20px;
+}
+.spinner {
+  width:48px; height:48px;
+  border:3px solid var(--dark3);
+  border-top:3px solid var(--blue);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  margin:0 auto 16px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading p { color:var(--muted); font-size:14px; }
+
+#results { display:none; }
+
+.alert {
+  border-radius:12px;
+  padding:16px 20px;
+  margin-bottom:20px;
+  display:flex; align-items:flex-start; gap:12px;
+}
+.alert-cnv { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); }
+.alert-dme { background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2); }
+.alert-drusen { background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.2); }
+.alert-normal { background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); }
+.alert-icon { font-size:24px; flex-shrink:0; }
+.alert-title { font-size:15px; font-weight:700; margin-bottom:3px; }
+.alert-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+
+.metrics-row {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+.metric {
+  background:var(--dark3);
+  border-radius:10px;
+  padding:14px;
+  text-align:center;
+  border:1px solid var(--border);
+}
+.metric h4 {
+  font-size:20px; font-weight:800;
+  color:var(--blue); margin-bottom:3px;
+}
+.metric p { font-size:11px; color:var(--muted); font-weight:500; }
+
+.risk-section {
+  background:var(--dark3);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:16px;
+  border:1px solid var(--border);
+}
+.risk-title {
+  font-size:12px; font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  margin-bottom:14px;
+}
+.risk-item { margin-bottom:12px; }
+.risk-item:last-child { margin-bottom:0; }
+.risk-row {
+  display:flex; align-items:center;
+  justify-content:space-between;
+  font-size:12px; margin-bottom:6px;
+}
+.risk-label { color:var(--muted); font-weight:500; }
+.risk-val { font-weight:700; color:var(--text); }
+.risk-track {
+  height:6px; background:rgba(255,255,255,0.06);
+  border-radius:3px; overflow:hidden;
+}
+.risk-fill {
+  height:100%; border-radius:3px;
+  transition:width 1s ease;
+}
+
+.recs {
+  background:var(--dark3);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:16px;
+  border:1px solid var(--border);
+}
+.recs-title {
+  font-size:12px; font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  margin-bottom:12px;
+}
+.rec-item {
+  display:flex; align-items:flex-start;
+  gap:8px; font-size:12px; color:var(--muted);
+  margin-bottom:8px; line-height:1.5;
+}
+.rec-dot {
+  width:5px; height:5px;
+  background:var(--blue);
+  border-radius:50%;
+  margin-top:5px; flex-shrink:0;
+}
+
+.voice-row {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:16px;
+}
+.voice-btn {
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  font-size:12px; font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+}
+.voice-btn:hover {
+  border-color:var(--blue);
+  color:var(--blue);
+  background:rgba(14,165,233,0.05);
+}
+
+.pdf-btn {
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  background:rgba(14,165,233,0.1);
+  border:1px solid var(--border);
+  color:var(--blue2);
+  font-size:13px; font-weight:700;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+  text-decoration:none;
+  display:block;
+}
+.pdf-btn:hover {
+  background:rgba(14,165,233,0.2);
+  border-color:var(--blue);
+}
+
+.empty-results {
+  text-align:center;
+  padding:60px 20px;
+  color:var(--muted);
+}
+.empty-results .icon { font-size:48px; margin-bottom:16px; }
+.empty-results p { font-size:14px; line-height:1.6; }
+
+/* HEATMAP */
+.heatmap-card {
+  display:none;
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+  margin-top:24px;
+}
+.heatmap-title {
+  font-size:15px; font-weight:700;
+  margin-bottom:16px; color:var(--text);
+  display:flex; align-items:center; gap:8px;
+}
+.heatmap-badge {
+  font-size:11px; font-weight:600;
+  background:rgba(239,68,68,0.1);
+  color:#f87171;
+  border:1px solid rgba(239,68,68,0.2);
+  border-radius:100px;
+  padding:3px 10px;
+}
+#heatmap-img {
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--border);
+}
+.heatmap-desc {
+  margin-top:12px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.6;
+  background:rgba(14,165,233,0.04);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-box">👁</div>
+    <span class="logo-name">Eye-<span>AI</span></span>
+  </a>
+  <div class="nav-right">
+    <a href="/dashboard" class="btn-back">← Dashboard</a>
+    <a href="/logout" class="btn-logout">Logout</a>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-title">🔬 OCT Retinal Scan Analysis</div>
+  <div class="page-desc">Upload your OCT scan image for AI-powered disease detection using DenseNet121</div>
+
+  <div class="scan-grid">
+
+    <!-- Upload -->
+    <div class="upload-card">
+      <div class="card-title">📤 Upload OCT Image</div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/*" onchange="previewImage(this)">
+        <div class="upload-icon">👁</div>
+        <h4>Click to upload OCT image</h4>
+        <p>Supports JPG, PNG, JPEG</p>
+      </div>
+
+      <img id="preview-img" alt="Preview">
+
+      <button class="btn-analyze" id="analyzeBtn"
+              onclick="analyzeScan()" disabled>
+        🔬 Analyze with DenseNet121
+      </button>
+
+      <div class="pipeline">
+        <div class="pipeline-title">AI Analysis Pipeline</div>
+        <div class="pipeline-steps">
+          <div class="pipeline-step"><div class="p-num">1</div>Upload OCT image</div>
+          <div class="pipeline-step"><div class="p-num">2</div>Resize to 224×224 pixels</div>
+          <div class="pipeline-step"><div class="p-num">3</div>Normalize pixel values</div>
+          <div class="pipeline-step"><div class="p-num">4</div>DenseNet121 prediction</div>
+          <div class="pipeline-step"><div class="p-num">5</div>Generate Grad-CAM heatmap</div>
+          <div class="pipeline-step"><div class="p-num">6</div>Calculate systemic risks</div>
+          <div class="pipeline-step"><div class="p-num">7</div>Generate medical report</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-card">
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analyzing with DenseNet121...</p>
+        <p style="font-size:12px;margin-top:8px;">Generating heatmap...</p>
+      </div>
+
+      <div id="results">
+        <div class="alert" id="alertBox">
+          <div class="alert-icon" id="alertIcon"></div>
+          <div>
+            <div class="alert-title" id="alertTitle"></div>
+            <div class="alert-desc" id="alertDesc"></div>
+          </div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric">
+            <h4 id="diseaseVal">-</h4>
+            <p>Disease</p>
+          </div>
+          <div class="metric">
+            <h4 id="confVal">-</h4>
+            <p>Confidence</p>
+          </div>
+          <div class="metric">
+            <h4 id="sevVal">-</h4>
+            <p>Severity</p>
+          </div>
+        </div>
+
+        <div class="risk-section">
+          <div class="risk-title">🫀 Systemic Risk Assessment</div>
+          <div class="risk-item">
+            <div class="risk-row">
+              <span class="risk-label">❤️ Heart Risk</span>
+              <span class="risk-val" id="heartVal">-</span>
+            </div>
+            <div class="risk-track">
+              <div class="risk-fill" id="heartBar" style="background:#ef4444;width:0%"></div>
+            </div>
+          </div>
+          <div class="risk-item">
+            <div class="risk-row">
+              <span class="risk-label">🧠 Brain Risk</span>
+              <span class="risk-val" id="brainVal">-</span>
+            </div>
+            <div class="risk-track">
+              <div class="risk-fill" id="brainBar" style="background:#8b5cf6;width:0%"></div>
+            </div>
+          </div>
+          <div class="risk-item">
+            <div class="risk-row">
+              <span class="risk-label">🫘 Kidney Risk</span>
+              <span class="risk-val" id="kidneyVal">-</span>
+            </div>
+            <div class="risk-track">
+              <div class="risk-fill" id="kidneyBar" style="background:#0ea5e9;width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="recs">
+          <div class="recs-title">✅ Clinical Recommendations</div>
+          <div id="recList"></div>
+        </div>
+
+        <div class="voice-row">
+          <button class="voice-btn" onclick="speak('english')">🇬🇧 English</button>
+          <button class="voice-btn" onclick="speak('hindi')">🇮🇳 Hindi</button>
+          <button class="voice-btn" onclick="speak('telugu')">🌐 Telugu</button>
+        </div>
+
+        <a id="pdfBtn" href="#" class="pdf-btn">
+  📄 Download PDF Report
+</a>
+<a href="/doctor" class="pdf-btn" style="margin-top:8px; background:rgba(139,92,246,0.1); border-color:rgba(139,92,246,0.3); color:#a78bfa;">
+  🏥 Find Eye Doctor Near You
+</a>
+<a href="/dashboard" class="pdf-btn" style="margin-top:8px; background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3); color:#34d399;">
+  📊 View Dashboard
+</a>
+      </div>
+
+      <div class="empty-results" id="emptyState">
+        <div class="icon">🔬</div>
+        <p>Upload an OCT retinal image<br>and click Analyze to get AI diagnosis</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Heatmap Section -->
+  <div class="heatmap-card" id="heatmapCard">
+    <div class="heatmap-title">
+      🔥 Grad-CAM Heatmap
+      <span class="heatmap-badge">AI Visual Explanation</span>
+    </div>
+    <img id="heatmap-img" src="" alt="Grad-CAM Heatmap">
+    <div class="heatmap-desc">
+      🔴 <b>Red/Yellow regions</b> — Areas that most influenced the AI diagnosis.<br>
+      🔵 <b>Blue regions</b> — Areas with low influence on the prediction.<br>
+      The heatmap shows exactly which part of your retina triggered the disease detection.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DISEASES = {
+  CNV: {
+    icon:'🚨', title:'CRITICAL — CNV Detected',
+    alertClass:'alert-cnv',
+    desc:'Choroidal Neovascularization detected. Abnormal blood vessel growth. See specialist immediately!',
+    recs:['Urgent referral to retinal specialist','Anti-VEGF injection therapy','Monthly OCT monitoring','Avoid smoking immediately','Blood pressure management']
+  },
+  DME: {
+    icon:'⚠️', title:'HIGH RISK — DME Detected',
+    alertClass:'alert-dme',
+    desc:'Diabetic Macular Edema detected. Fluid accumulation in macula. Control blood sugar urgently!',
+    recs:['Strict glycemic control required','Blood pressure management','Anti-VEGF injection therapy','Laser photocoagulation evaluation','Endocrinology follow-up']
+  },
+  DRUSEN: {
+    icon:'🔔', title:'MODERATE — Drusen Detected',
+    alertClass:'alert-drusen',
+    desc:'Drusen deposits detected. Early sign of macular degeneration. Monitor regularly!',
+    recs:['AREDS2 vitamin supplementation','OCT monitoring every 6 months','Daily Amsler grid testing','Anti-oxidant rich diet','UV-protective eyewear']
+  },
+  NORMAL: {
+    icon:'✅', title:'ALL CLEAR — Normal Retina',
+    alertClass:'alert-normal',
+    desc:'No significant pathological changes detected. Retinal layers appear intact and healthy!',
+    recs:['Continue annual eye examinations','Healthy diet rich in omega-3','Regular physical exercise','UV eye protection outdoors','Report any sudden vision changes']
+  }
+};
+
+let currentResult = null;
+
+function previewImage(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('preview-img');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      document.getElementById('analyzeBtn').disabled = false;
+      document.getElementById('uploadZone').style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function analyzeScan() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('heatmapCard').style.display = 'none';
+  document.getElementById('analyzeBtn').disabled = true;
+
+  const formData = new FormData();
+  formData.append('image', document.getElementById('fileInput').files[0]);
+
+  fetch('/predict', { method:'POST', body:formData })
+  .then(r => r.json())
+  .then(data => {
+    currentResult = data;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('analyzeBtn').disabled = false;
+
+    const d = DISEASES[data.disease];
+
+    const alertBox = document.getElementById('alertBox');
+    alertBox.className = 'alert ' + d.alertClass;
+    document.getElementById('alertIcon').textContent = d.icon;
+    document.getElementById('alertTitle').textContent = d.title;
+    document.getElementById('alertDesc').textContent = d.desc;
+
+    document.getElementById('diseaseVal').textContent = data.disease;
+    document.getElementById('confVal').textContent = data.confidence + '%';
+    document.getElementById('sevVal').textContent = data.severity + '/10';
+
+    const heart  = Math.round(data.severity * 6);
+    const brain  = Math.round(data.severity * 5);
+    const kidney = Math.round(data.severity * 4);
+
+    document.getElementById('heartVal').textContent  = heart + '%';
+    document.getElementById('brainVal').textContent  = brain + '%';
+    document.getElementById('kidneyVal').textContent = kidney + '%';
+
+    setTimeout(() => {
+      document.getElementById('heartBar').style.width  = heart + '%';
+      document.getElementById('brainBar').style.width  = brain + '%';
+      document.getElementById('kidneyBar').style.width = kidney + '%';
+    }, 100);
+
+    const recList = document.getElementById('recList');
+    recList.innerHTML = d.recs.map(r =>
+      `<div class="rec-item"><div class="rec-dot"></div>${r}</div>`
+    ).join('');
+
+    // PDF button
+    if (data.scan_id) {
+      document.getElementById('pdfBtn').href = `/download_pdf/${data.scan_id}`;
+    }
+
+    // Show heatmap
+ if (data.heatmap) {
+  document.getElementById('heatmap-img').src = data.heatmap + '?t=' + Date.now();
+  document.getElementById('heatmapCard').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('heatmapCard').scrollIntoView({
+      behavior: 'smooth', block: 'start'
+    });
+  }, 500);
+}
+  })
+  .catch(err => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('analyzeBtn').disabled = false;
+    alert('Error: ' + err.message);
+  });
+}
+function speak(lang) {
+  if (!currentResult) return;
+  const d = currentResult;
+  let text = '';
+
+  if (lang === 'english') {
+    if (d.disease === 'NORMAL') {
+      text = `Hello. Your eye scan result is ready. Good news! Your eyes are completely healthy. No disease was found. Your heart is safe. Your brain is safe. Your kidneys are safe. Please continue to take care of your eyes. Visit your eye doctor once every year. Thank you.`;
+    } else if (d.disease === 'CNV') {
+      text = `Hello. Your eye scan result is ready. Warning! A serious eye disease called C N V has been found in your eyes. This means abnormal blood vessels are growing in your eye. This is dangerous. Please visit an eye doctor immediately. Do not delay. Your heart risk is ${d.heart_risk} percent. Your brain risk is ${d.brain_risk} percent. Early treatment can save your vision. Please go to a doctor today. Thank you.`;
+    } else if (d.disease === 'DME') {
+      text = `Hello. Your eye scan result is ready. Warning! A disease called Diabetic Macular Edema has been found in your eyes. This happens due to diabetes. Fluid is collecting inside your eye. Please control your blood sugar immediately. Visit an eye doctor as soon as possible. Your heart risk is ${d.heart_risk} percent. Do not ignore this. Early treatment is very important. Thank you.`;
+    } else if (d.disease === 'DRUSEN') {
+      text = `Hello. Your eye scan result is ready. Attention! Small deposits called Drusen have been found in your eyes. This is an early warning sign. Your eyes may get worse if not treated. Please visit an eye doctor soon. Eat healthy food. Avoid bright sunlight without glasses. Your heart risk is ${d.heart_risk} percent. Please take care of your eyes. Thank you.`;
+    }
+
+  } else if (lang === 'hindi') {
+    if (d.disease === 'NORMAL') {
+      text = `नमस्ते। आपकी आंखों की जांच का परिणाम आ गया है। खुशखबरी! आपकी आंखें बिल्कुल ठीक हैं। कोई बीमारी नहीं मिली। आपका दिल सुरक्षित है। आपका दिमाग सुरक्षित है। आपके गुर्दे सुरक्षित हैं। हर साल एक बार डॉक्टर से आंखें दिखाते रहें। धन्यवाद।`;
+    } else if (d.disease === 'CNV') {
+      text = `नमस्ते। आपकी आंखों की जांच का परिणाम आ गया है। चेतावनी! आपकी आंखों में सी एन वी नामक गंभीर बीमारी पाई गई है। आंखों में गलत नसें बढ़ रही हैं। यह खतरनाक है। कृपया तुरंत आंखों के डॉक्टर के पास जाएं। देरी मत करें। जल्दी इलाज से आंखों की रोशनी बच सकती है। आज ही डॉक्टर के पास जाएं। धन्यवाद।`;
+    } else if (d.disease === 'DME') {
+      text = `नमस्ते। आपकी आंखों की जांच का परिणाम आ गया है। चेतावनी! आपकी आंखों में डायबिटिक मैक्युलर एडिमा पाया गया है। यह शुगर की बीमारी से होता है। आंखों में पानी जमा हो रहा है। तुरंत अपनी शुगर कंट्रोल करें। जल्द से जल्द आंखों के डॉक्टर के पास जाएं। इसे नजरअंदाज मत करें। धन्यवाद।`;
+    } else if (d.disease === 'DRUSEN') {
+      text = `नमस्ते। आपकी आंखों की जांच का परिणाम आ गया है। ध्यान दें! आपकी आंखों में ड्रूसन नामक छोटे-छोटे जमाव पाए गए हैं। यह एक शुरुआती चेतावनी है। समय पर इलाज न हो तो आंखें कमजोर हो सकती हैं। जल्द ही आंखों के डॉक्टर से मिलें। अच्छा खाना खाएं। धूप में जाते समय चश्मा पहनें। धन्यवाद।`;
+    }
+
+  } else {
+    if (d.disease === 'NORMAL') {
+      text = `నమస్కారం. మీ కంటి పరీక్ష ఫలితం వచ్చింది. శుభవార్త! మీ కళ్ళు పూర్తిగా ఆరోగ్యంగా ఉన్నాయి. ఏ వ్యాధీ కనుగొనబడలేదు. మీ గుండె సురక్షితంగా ఉంది. మీ మెదడు సురక్షితంగా ఉంది. మీ మూత్రపిండాలు సురక్షితంగా ఉన్నాయి. ప్రతి సంవత్సరం ఒకసారి కంటి వైద్యుడిని సందర్శించండి. ధన్యవాదాలు.`;
+    } else if (d.disease === 'CNV') {
+      text = `నమస్కారం. మీ కంటి పరీక్ష ఫలితం వచ్చింది. హెచ్చరిక! మీ కళ్ళలో సి ఎన్ వి అనే తీవ్రమైన వ్యాధి కనుగొనబడింది. కంట్లో తప్పుడు రక్తనాళాలు పెరుగుతున్నాయి. ఇది చాలా ప్రమాదకరం. దయచేసి వెంటనే కంటి వైద్యుడి దగ్గరకు వెళ్ళండి. ఆలస్యం చేయకండి. త్వరగా చికిత్స చేయించుకుంటే చూపు కాపాడవచ్చు. ఈ రోజే డాక్టర్ దగ్గరకు వెళ్ళండి. ధన్యవాదాలు.`;
+    } else if (d.disease === 'DME') {
+      text = `నమస్కారం. మీ కంటి పరీక్ష ఫలితం వచ్చింది. హెచ్చరిక! మీ కళ్ళలో డయాబెటిక్ మాక్యులర్ ఎడెమా కనుగొనబడింది. ఇది చక్కెర వ్యాధి వల్ల వస్తుంది. కంట్లో నీరు చేరుతోంది. వెంటనే మీ చక్కెర స్థాయిని నియంత్రించండి. వీలైనంత త్వరగా కంటి వైద్యుడిని కలవండి. దీన్ని పట్టించుకోకపోతే చూపు పోవచ్చు. ధన్యవాదాలు.`;
+    } else if (d.disease === 'DRUSEN') {
+      text = `నమస్కారం. మీ కంటి పరీక్ష ఫలితం వచ్చింది. శ్రద్ధ వహించండి! మీ కళ్ళలో డ్రూసెన్ అనే చిన్న నిక్షేపాలు కనుగొనబడ్డాయి. ఇది ముందస్తు హెచ్చరిక సంకేతం. సమయానికి చికిత్స చేయించుకోకపోతే కళ్ళు బలహీనమవుతాయి. త్వరలో కంటి వైద్యుడిని కలవండి. మంచి ఆహారం తినండి. ఎండలో చూపు కళ్ళద్దాలు వేసుకోండి. ధన్యవాదాలు.`;
+    }
+  }
+
+if (lang === 'telugu') {
+    fetch('/speak', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: text, lang: 'te'})
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.audio) {
+        const audio = new Audio(data.audio);
+        audio.play();
+      }
+    });
+  } else {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === 'english' ? 'en-US' : 'hi-IN';
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  }
+}
+</script>
+</body>
+</html>
