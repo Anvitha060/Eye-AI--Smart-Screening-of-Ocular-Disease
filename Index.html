@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eye-AI Smart Screening of Ocular Diseases</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0ea5e9;
+  --blue2: #38bdf8;
+  --blue3: #0284c7;
+  --purple: #8b5cf6;
+  --green: #10b981;
+  --dark: #020817;
+  --dark2: #0a1628;
+  --dark3: #0f2040;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(14,165,233,0.15);
+  --text: #f1f5f9;
+  --muted: #64748b;
+}
+body.light {
+  --dark: #f8fafc;
+  --dark2: #f0f9ff;
+  --dark3: #e0f2fe;
+  --card: #ffffff;
+  --border: #bae6fd;
+  --text: #0f172a;
+  --muted: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--dark);
+  color:var(--text);
+  transition:background 0.4s, color 0.4s;
+  overflow-x:hidden;
+}
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--dark); }
+::-webkit-scrollbar-thumb { background:var(--dark3); border-radius:3px; }
+nav {
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:100;
+  height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 72px;
+  backdrop-filter:blur(24px);
+  background:rgba(2,8,23,0.85);
+  border-bottom:1px solid var(--border);
+  transition:background 0.4s;
+}
+body.light nav { background:rgba(248,250,252,0.92); }
+.logo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--text);
+}
+.logo-box {
+  width:34px; height:34px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+}
+.logo-name { font-size:17px; font-weight:700; letter-spacing:-0.3px; }
+.logo-name span { color:var(--blue); }
+.nav-links { display:flex; gap:32px; }
+.nav-links a {
+  color:var(--muted);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+  transition:color 0.2s;
+  position:relative;
+}
+.nav-links a::after {
+  content:'';
+  position:absolute;
+  bottom:-4px; left:0;
+  width:0; height:1.5px;
+  background:var(--blue);
+  transition:width 0.3s;
+}
+.nav-links a:hover { color:var(--text); }
+.nav-links a:hover::after { width:100%; }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.theme-btn {
+  width:36px; height:36px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  font-size:15px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.2s;
+}
+.theme-btn:hover { background:var(--card); }
+.btn-outline {
+  padding:8px 18px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  font-size:13px;
+  font-weight:600;
+  text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-outline:hover { background:var(--card); }
+.btn-solid {
+  padding:8px 18px;
+  border-radius:8px;
+  background:var(--blue);
+  color:white;
+  font-size:13px;
+  font-weight:600;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-solid:hover { background:var(--blue3); transform:translateY(-1px); }
+.hero {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:100px 72px 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute;
+  top:20%; left:50%;
+  transform:translate(-50%,-50%);
+  width:600px; height:600px;
+  background:radial-gradient(circle,rgba(14,165,233,0.08),transparent 70%);
+  pointer-events:none;
+}
+.hero-inner {
+  max-width:1200px;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  align-items:center;
+}
+.hero-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(14,165,233,0.08);
+  border:1px solid rgba(14,165,233,0.2);
+  border-radius:100px;
+  padding:6px 16px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--blue2);
+  margin-bottom:24px;
+}
+.live {
+  width:6px; height:6px;
+  background:var(--green);
+  border-radius:50%;
+  animation:live-pulse 2s infinite;
+}
+@keyframes live-pulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.5);}
+  50%{box-shadow:0 0 0 5px rgba(16,185,129,0);}
+}
+.hero h1 {
+  font-size:54px;
+  font-weight:800;
+  line-height:1.1;
+  letter-spacing:-1.5px;
+  margin-bottom:20px;
+  color:var(--text);
+}
+.hero h1 em { font-style:normal; color:var(--blue); }
+.hero p {
+  font-size:17px;
+  color:var(--muted);
+  line-height:1.75;
+  margin-bottom:36px;
+  max-width:460px;
+}
+.hero-btns { display:flex; gap:12px; margin-bottom:48px; }
+.btn-hero-primary {
+  padding:13px 26px;
+  border-radius:10px;
+  background:var(--blue);
+  color:white;
+  font-size:14px;
+  font-weight:700;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  transition:all 0.25s;
+}
+.btn-hero-primary:hover {
+  background:var(--blue3);
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(14,165,233,0.35);
+}
+.btn-hero-ghost {
+  padding:13px 26px;
+  border-radius:10px;
+  background:var(--card);
+  color:var(--text);
+  font-size:14px;
+  font-weight:600;
+  text-decoration:none;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:all 0.25s;
+}
+.btn-hero-ghost:hover { border-color:var(--blue); color:var(--blue); }
+.hero-stats {
+  display:flex;
+  gap:0;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--card);
+  backdrop-filter:blur(10px);
+}
+.hstat {
+  flex:1;
+  padding:16px 20px;
+  border-right:1px solid var(--border);
+  text-align:center;
+}
+.hstat:last-child { border-right:none; }
+.hstat h4 { font-size:22px; font-weight:800; color:var(--blue); letter-spacing:-0.5px; }
+.hstat p { font-size:11px; color:var(--muted); margin-top:3px; font-weight:500; }
+.hero-right { display:flex; align-items:center; justify-content:center; }
+.eye-visual { position:relative; width:400px; height:400px; }
+.ev-bg {
+  position:absolute; inset:0;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(14,165,233,0.06),transparent 70%);
+  border:1px solid var(--border);
+}
+.ev-ring {
+  position:absolute;
+  border-radius:50%;
+  border:1px dashed rgba(14,165,233,0.2);
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  animation:slow-spin 20s linear infinite;
+}
+.ev-ring-1 { width:340px; height:340px; }
+.ev-ring-2 { width:260px; height:260px; animation-direction:reverse; animation-duration:15s; }
+@keyframes slow-spin { to { transform:translate(-50%,-50%) rotate(360deg); } }
+.ev-center {
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:160px; height:160px;
+  background:var(--dark2);
+  border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:64px;
+  box-shadow:0 0 0 12px rgba(14,165,233,0.04),0 0 40px rgba(14,165,233,0.12);
+}
+body.light .ev-center { background:#f0f9ff; }
+.ev-scan {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:160px; height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  border-radius:1px;
+  animation:scan-move 2.5s ease-in-out infinite;
+  box-shadow:0 0 8px var(--blue);
+}
+@keyframes scan-move {
+  0%{top:25%;opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{top:75%;opacity:0;}
+}
+.ev-chip {
+  position:absolute;
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:11px;
+  font-weight:600;
+  color:var(--blue2);
+  white-space:nowrap;
+  animation:chip-float 4s ease-in-out infinite;
+  backdrop-filter:blur(10px);
+}
+body.light .ev-chip { background:white; }
+.chip-dot {
+  display:inline-block;
+  width:5px; height:5px;
+  border-radius:50%;
+  margin-right:5px;
+  vertical-align:middle;
+}
+.ev-chip-1 { top:10%; right:-10px; animation-delay:0s; }
+.ev-chip-2 { bottom:18%; right:-10px; animation-delay:1.2s; }
+.ev-chip-3 { top:30%; left:-10px; animation-delay:0.6s; }
+.ev-chip-4 { bottom:30%; left:-10px; animation-delay:1.8s; }
+@keyframes chip-float {
+  0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}
+}
+.marquee {
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:rgba(14,165,233,0.03);
+  padding:12px 0;
+  overflow:hidden;
+}
+.marquee-track {
+  display:flex; gap:48px;
+  width:max-content;
+  animation:marquee-move 25s linear infinite;
+}
+.marquee-item {
+  display:flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:500;
+  color:var(--muted); white-space:nowrap;
+}
+.marquee-item b { color:var(--blue2); font-weight:600; }
+@keyframes marquee-move { from{transform:translateX(0);}to{transform:translateX(-50%);} }
+.section { padding:80px 72px; max-width:1344px; margin:0 auto; }
+.sec-tag {
+  font-size:12px; font-weight:700;
+  color:var(--blue);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-bottom:10px;
+}
+.sec-title {
+  font-size:38px; font-weight:800;
+  letter-spacing:-1px; line-height:1.15;
+  margin-bottom:12px; color:var(--text);
+}
+.sec-desc {
+  font-size:15px; color:var(--muted);
+  line-height:1.7; max-width:480px;
+  margin-bottom:48px;
+}
+.feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.feat-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px; padding:24px;
+  transition:all 0.25s;
+}
+body.light .feat-card { background:white; box-shadow:0 2px 12px rgba(0,0,0,0.04); }
+.feat-card:hover {
+  border-color:var(--blue);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(14,165,233,0.1);
+}
+.feat-icon {
+  width:42px; height:42px;
+  background:rgba(14,165,233,0.1);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; margin-bottom:14px;
+}
+.feat-card h3 { font-size:15px; font-weight:700; margin-bottom:6px; color:var(--text); }
+.feat-card p { font-size:13px; color:var(--muted); line-height:1.65; }
+.how-bg { background:var(--dark2); transition:background 0.4s; }
+body.light .how-bg { background:#f0f9ff; }
+.steps-row {
+  display:grid; grid-template-columns:repeat(5,1fr);
+  gap:16px; position:relative; margin-top:48px;
+}
+.steps-row::before {
+  content:''; position:absolute;
+  top:27px; left:10%; right:10%;
+  height:1px; background:var(--border);
+}
+.step-item { text-align:center; position:relative; z-index:1; }
+.step-circle {
+  width:54px; height:54px;
+  border-radius:50%;
+  background:var(--dark3);
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; margin:0 auto 14px;
+  transition:all 0.25s;
+}
+body.light .step-circle { background:white; }
+.step-item:hover .step-circle {
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px rgba(14,165,233,0.1);
+}
+.step-item h4 { font-size:13px; font-weight:700; margin-bottom:4px; color:var(--text); }
+.step-item p { font-size:12px; color:var(--muted); line-height:1.5; }
+.disease-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:48px; }
+.disease-card { border-radius:14px; padding:24px; transition:transform 0.25s; }
+.disease-card:hover { transform:translateY(-4px); }
+.dc-1 { background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); }
+.dc-2 { background:rgba(249,115,22,0.07); border:1px solid rgba(249,115,22,0.2); }
+.dc-3 { background:rgba(234,179,8,0.07); border:1px solid rgba(234,179,8,0.2); }
+.dc-4 { background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); }
+.disease-emoji { font-size:32px; margin-bottom:12px; }
+.disease-card h4 { font-size:15px; font-weight:700; margin-bottom:6px; color:var(--text); }
+.disease-card p { font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:12px; }
+.sev-tag { display:inline-block; padding:3px 10px; border-radius:100px; font-size:11px; font-weight:700; }
+.t-red { background:rgba(239,68,68,0.15); color:#f87171; }
+.t-orange { background:rgba(249,115,22,0.15); color:#fb923c; }
+.t-yellow { background:rgba(234,179,8,0.15); color:#fbbf24; }
+.t-green { background:rgba(16,185,129,0.15); color:#34d399; }
+.portals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:48px; }
+.portal-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px; padding:28px;
+  transition:all 0.25s;
+}
+body.light .portal-card { background:white; box-shadow:0 2px 12px rgba(0,0,0,0.04); }
+.portal-card:hover {
+  border-color:var(--blue);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(14,165,233,0.1);
+}
+.portal-emoji { font-size:36px; margin-bottom:16px; }
+.portal-card h3 { font-size:18px; font-weight:700; margin-bottom:8px; color:var(--text); }
+.portal-card p { font-size:13px; color:var(--muted); line-height:1.65; margin-bottom:20px; }
+.plist { display:flex; flex-direction:column; gap:8px; }
+.plist-item { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); }
+.pcheck {
+  width:16px; height:16px; border-radius:50%;
+  background:rgba(14,165,233,0.12);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:var(--blue); font-weight:800; flex-shrink:0;
+}
+.cta-wrap { padding:0 72px 80px; max-width:1344px; margin:0 auto; }
+.cta-box {
+  background:linear-gradient(135deg,var(--blue3),var(--blue),#6366f1);
+  border-radius:20px; padding:64px;
+  text-align:center; position:relative; overflow:hidden;
+}
+.cta-box::after {
+  content:''; position:absolute;
+  top:-100px; right:-100px;
+  width:300px; height:300px;
+  background:rgba(255,255,255,0.06);
+  border-radius:50%; pointer-events:none;
+}
+.cta-box h2 { font-size:40px; font-weight:800; color:white; letter-spacing:-0.8px; margin-bottom:12px; position:relative; }
+.cta-box p { font-size:16px; color:rgba(255,255,255,0.75); margin-bottom:36px; position:relative; }
+.cta-btns { display:flex; gap:12px; justify-content:center; position:relative; }
+.cta-btn-white {
+  padding:13px 26px; border-radius:10px;
+  background:white; color:var(--blue3);
+  font-size:14px; font-weight:700;
+  text-decoration:none; border:none; cursor:pointer; transition:all 0.2s;
+}
+.cta-btn-white:hover { background:#f0f9ff; transform:translateY(-1px); }
+.cta-btn-ghost {
+  padding:13px 26px; border-radius:10px;
+  background:transparent; color:white;
+  font-size:14px; font-weight:600;
+  text-decoration:none; border:2px solid rgba(255,255,255,0.35); cursor:pointer; transition:all 0.2s;
+}
+.cta-btn-ghost:hover { border-color:white; background:rgba(255,255,255,0.08); }
+footer {
+  padding:24px 72px;
+  border-top:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  background:var(--dark); transition:background 0.4s;
+}
+footer p { font-size:12px; color:var(--muted); }
+.reveal { opacity:0; transform:translateY(28px); transition:opacity 0.65s ease, transform 0.65s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.d1{transition-delay:0.1s;}.d2{transition-delay:0.2s;}.d3{transition-delay:0.3s;}.d4{transition-delay:0.4s;}
+.anim-1{animation:fade-up 0.5s ease 0.1s both;}
+.anim-2{animation:fade-up 0.5s ease 0.2s both;}
+.anim-3{animation:fade-up 0.5s ease 0.3s both;}
+.anim-4{animation:fade-up 0.5s ease 0.4s both;}
+.anim-5{animation:fade-up 0.5s ease 0.5s both;}
+@keyframes fade-up{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-box">👁</div>
+    <span class="logo-name">Eye-<span>AI</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it Works</a>
+    <a href="#diseases">Diseases</a>
+    <a href="#portals">Portals</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+    {% if session.user_id %}
+    <a href="/scan" class="btn-outline">🔬 Scan</a>
+    <a href="/dashboard" class="btn-solid">Dashboard →</a>
+    {% else %}
+    <a href="/login" class="btn-outline">Login</a>
+    <a href="/register" class="btn-solid">Get Started →</a>
+    {% endif %}
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge anim-1">
+        <div class="live"></div>
+        DenseNet121 · 86% Accuracy · Hospital Ready
+      </div>
+      <h1 class="anim-2">Eye-AI<br><em>Smart Screening</em><br>of Ocular Diseases</h1>
+      <p class="anim-3">Detect CNV, DME, Drusen and Normal conditions from OCT scans in under 2 seconds. Built for hospitals, clinics and rural healthcare across India.</p>
+      <div class="hero-btns anim-4">
+        {% if session.user_id %}
+        <a href="/scan" class="btn-hero-primary">🔬 Start Scanning</a>
+        <a href="/dashboard" class="btn-hero-ghost">Dashboard →</a>
+        {% else %}
+        <a href="/register" class="btn-hero-primary">🚀 Start Free Screening</a>
+        <a href="#how" class="btn-hero-ghost">See How It Works →</a>
+        {% endif %}
+      </div>
+      <div class="hero-stats anim-5">
+        <div class="hstat"><h4>86%</h4><p>Accuracy</p></div>
+        <div class="hstat"><h4>2800+</h4><p>Training Images</p></div>
+        <div class="hstat"><h4>4</h4><p>Diseases</p></div>
+        <div class="hstat"><h4>&lt;2s</h4><p>Analysis</p></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="eye-visual">
+        <div class="ev-bg"></div>
+        <div class="ev-ring ev-ring-1"></div>
+        <div class="ev-ring ev-ring-2"></div>
+        <div class="ev-scan"></div>
+        <div class="ev-center">👁</div>
+        <div class="ev-chip ev-chip-1"><span class="chip-dot" style="background:#10b981"></span>NORMAL · 94.2%</div>
+        <div class="ev-chip ev-chip-2"><span class="chip-dot" style="background:#0ea5e9"></span>DenseNet121</div>
+        <div class="ev-chip ev-chip-3"><span class="chip-dot" style="background:#8b5cf6"></span>Grad-CAM ✓</div>
+        <div class="ev-chip ev-chip-4"><span class="chip-dot" style="background:#f59e0b"></span>Risk: Low 🟢</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <div class="marquee-item">🔬 DenseNet121 <b>Active</b></div>
+    <div class="marquee-item">👁 OCT Analysis <b>Real-time</b></div>
+    <div class="marquee-item">🗣️ Telugu · Hindi · English <b>Voice</b></div>
+    <div class="marquee-item">📄 PDF Reports <b>Instant</b></div>
+    <div class="marquee-item">🏥 Doctor Finder <b>By City</b></div>
+    <div class="marquee-item">❤️ Heart · Brain · Kidney <b>Risk</b></div>
+    <div class="marquee-item">🔥 Grad-CAM <b>Heatmap</b></div>
+    <div class="marquee-item">📊 Risk Dashboard <b>Live</b></div>
+    <div class="marquee-item">🔬 DenseNet121 <b>Active</b></div>
+    <div class="marquee-item">👁 OCT Analysis <b>Real-time</b></div>
+    <div class="marquee-item">🗣️ Telugu · Hindi · English <b>Voice</b></div>
+    <div class="marquee-item">📄 PDF Reports <b>Instant</b></div>
+    <div class="marquee-item">🏥 Doctor Finder <b>By City</b></div>
+    <div class="marquee-item">❤️ Heart · Brain · Kidney <b>Risk</b></div>
+    <div class="marquee-item">🔥 Grad-CAM <b>Heatmap</b></div>
+    <div class="marquee-item">📊 Risk Dashboard <b>Live</b></div>
+  </div>
+</div>
+
+<section class="section" id="features">
+  <p class="sec-tag reveal">Capabilities</p>
+  <h2 class="sec-title reveal d1">Everything a Hospital Needs</h2>
+  <p class="sec-desc reveal d2">Complete AI diagnostic ecosystem — from scan to report in one platform.</p>
+  <div class="feat-grid">
+    <div class="feat-card reveal"><div class="feat-icon">🧠</div><h3>DenseNet121 AI Engine</h3><p>Real CNN trained on 2800 OCT images. 86% accuracy. Not simulation.</p></div>
+    <div class="feat-card reveal d1"><div class="feat-icon">🔥</div><h3>Grad-CAM Heatmap</h3><p>Visual maps showing exactly which retinal region triggered the diagnosis.</p></div>
+    <div class="feat-card reveal d2"><div class="feat-icon">🗣️</div><h3>3-Language Voice</h3><p>Reports in Telugu, Hindi and English for rural patients who can't read.</p></div>
+    <div class="feat-card reveal"><div class="feat-icon">📄</div><h3>PDF Reports</h3><p>Professional downloadable medical reports for specialists and insurance.</p></div>
+    <div class="feat-card reveal d1"><div class="feat-icon">🏥</div><h3>Doctor Finder</h3><p>Find nearest eye specialists by city after your diagnosis.</p></div>
+    <div class="feat-card reveal d2"><div class="feat-icon">❤️</div><h3>Systemic Risk</h3><p>Heart, brain and kidney risk assessment from one retinal scan.</p></div>
+  </div>
+</section>
+
+<section class="how-bg" id="how">
+  <div class="section">
+    <p class="sec-tag reveal">Process</p>
+    <h2 class="sec-title reveal d1">How Eye-AI Works</h2>
+    <div class="steps-row">
+      <div class="step-item reveal"><div class="step-circle">📤</div><h4>Upload Scan</h4><p>Upload OCT retinal image JPG or PNG</p></div>
+      <div class="step-item reveal d1"><div class="step-circle">🧠</div><h4>AI Analysis</h4><p>DenseNet121 processes in under 2 seconds</p></div>
+      <div class="step-item reveal d2"><div class="step-circle">🔥</div><h4>Heatmap</h4><p>Grad-CAM highlights affected regions</p></div>
+      <div class="step-item reveal d3"><div class="step-circle">📊</div><h4>Risk Score</h4><p>Heart, brain and kidney risk calculated</p></div>
+      <div class="step-item reveal d4"><div class="step-circle">📄</div><h4>Report</h4><p>Download PDF or hear voice report</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="diseases">
+  <p class="sec-tag reveal">Detection</p>
+  <h2 class="sec-title reveal d1">4 Conditions Detected</h2>
+  <div class="disease-grid">
+    <div class="disease-card dc-1 reveal"><div class="disease-emoji">🚨</div><h4>CNV</h4><p>Choroidal Neovascularization — abnormal blood vessel growth under retina</p><span class="sev-tag t-red">Critical</span></div>
+    <div class="disease-card dc-2 reveal d1"><div class="disease-emoji">⚠️</div><h4>DME</h4><p>Diabetic Macular Edema — fluid accumulation in the macular region</p><span class="sev-tag t-orange">High Risk</span></div>
+    <div class="disease-card dc-3 reveal d2"><div class="disease-emoji">🔔</div><h4>DRUSEN</h4><p>Drusen deposits — early sign of age-related macular degeneration</p><span class="sev-tag t-yellow">Moderate</span></div>
+    <div class="disease-card dc-4 reveal d3"><div class="disease-emoji">✅</div><h4>NORMAL</h4><p>No pathological changes — healthy retinal layers with intact structure</p><span class="sev-tag t-green">Healthy</span></div>
+  </div>
+</section>
+
+<section class="how-bg" id="portals">
+  <div class="section">
+    <p class="sec-tag reveal">Access</p>
+    <h2 class="sec-title reveal d1">Three Dedicated Portals</h2>
+    <p class="sec-desc reveal d2">Built for every stakeholder in the healthcare ecosystem.</p>
+    <div class="portals-grid">
+      <div class="portal-card reveal">
+        <div class="portal-emoji">👤</div>
+        <h3>Patient Portal</h3>
+        <p>Complete self-service eye health with AI diagnosis and history tracking.</p>
+        <div class="plist">
+          <div class="plist-item"><div class="pcheck">✓</div>Upload and analyze OCT scans</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Voice reports in 3 languages</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Download PDF reports</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Find nearest eye doctor</div>
+        </div>
+      </div>
+      <div class="portal-card reveal d1">
+        <div class="portal-emoji">👨‍⚕️</div>
+        <h3>Doctor Portal</h3>
+        <p>Clinical dashboard for ophthalmologists to review diagnoses and manage patients.</p>
+        <div class="plist">
+          <div class="plist-item"><div class="pcheck">✓</div>View all patient scans</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Add clinical notes</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Approve AI diagnosis</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Send prescriptions</div>
+        </div>
+      </div>
+      <div class="portal-card reveal d2">
+        <div class="portal-emoji">👨‍💼</div>
+        <h3>Admin Portal</h3>
+        <p>Hospital-grade analytics and management for complete system oversight.</p>
+        <div class="plist">
+          <div class="plist-item"><div class="pcheck">✓</div>Analytics dashboard</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Disease statistics</div>
+          <div class="plist-item"><div class="pcheck">✓</div>User management</div>
+          <div class="plist-item"><div class="pcheck">✓</div>Export reports</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-wrap">
+  <div class="cta-box reveal">
+    <h2>Ready to Transform Eye Healthcare?</h2>
+    <p>Detect Early. Treat Early. See Forever.</p>
+    <div class="cta-btns">
+      {% if session.user_id %}
+      <a href="/scan" class="cta-btn-white">🔬 Start Scanning</a>
+      <a href="/dashboard" class="cta-btn-ghost">Dashboard →</a>
+      {% else %}
+      <a href="/register" class="cta-btn-white">🚀 Start Free Screening</a>
+      <a href="/login" class="cta-btn-ghost">Login →</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">
+    <div class="logo-box" style="width:28px;height:28px;font-size:14px;">👁</div>
+    <span class="logo-name" style="font-size:15px;">Eye-<span>AI</span></span>
+  </div>
+  <p>⚕ Eye-AI Smart Screening of Ocular Diseases · DenseNet121 · 86% Accuracy</p>
+  <p>Detect Early. Treat Early. See Forever.</p>
+</footer>
+
+<script>
+let isLight=false;
+function toggleTheme(){
+  isLight=!isLight;
+  document.body.classList.toggle('light',isLight);
+  document.getElementById('themeBtn').textContent=isLight?'🌙':'☀️';
+}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
